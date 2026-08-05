@@ -54,10 +54,9 @@ No hace falta tocar nada más — el diseño, los gráficos y los filtros de per
 - **Selector de período**: elegís qué meses/años entran en todos los cálculos (arriba de todo, con atajos "Todo" / "Últimos 12 meses" / "Ninguno").
 - **Evolución**: ingresos, egresos y resultado mes a mes.
 - **Por Concepto**: ranking de ingresos (Unidad de Negocio) y egresos (Grupo de Gastos), con detalle por cuenta contable al hacer click en cada concepto.
-- **Comparación de Períodos**: mes a mes por año, más un resumen por Balance (año fiscal marzo-febrero).
-- **Índices**: margen mensual/acumulado, ratio ingresos/egresos, estructura de egresos y variación interanual por mes.
+- **Índices**: margen mensual/acumulado, ratio ingresos/egresos, estructura de egresos, cobertura de egresos con el ingreso de Leche, y variación interanual por mes. Se comparan períodos con el mismo selector de arriba.
 - **Toggle $ / U$D** en el encabezado.
 
 ## Criterio de neto
 
-Igual que en el Excel: se excluye el IVA (débito fiscal en ventas / crédito fiscal en compras, ya discriminado en el Concepto "IVA" del archivo fuente). Todo lo demás (préstamos, socios, inversión) queda incluido tal cual figura en origen.
+Igual que en el Excel: se excluye el IVA (débito fiscal en ventas / crédito fiscal en compras, ya discriminado en el Concepto "IVA" del archivo fuente) y las Inversiones (Grupo de Gastos "BIENES DE CAPITAL" — compra de bienes de uso), que no inciden en el resultado del período. Las Mejoras (mantenimiento) sí quedan incluidas, por ser gasto operativo. Todo lo demás (préstamos, socios) queda incluido tal cual figura en origen.
