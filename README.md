@@ -54,7 +54,7 @@ No hace falta tocar nada más — el diseño, los gráficos y los filtros de per
 - **Selector de período**: elegís qué meses/años entran en todos los cálculos (arriba de todo, con atajos "Todo" / "Últimos 12 meses" / "Ninguno").
 - **Selector de Campo**: filtra todo el tablero por campo (CENTRAL, San José, Santa Margarita, Los Chañares).
 - **Evolución**: ingresos, egresos y resultado mes a mes.
-- **Por Concepto**: ranking de ingresos (Cereal, Hacienda, Leche, Extraordinaria) y egresos (Agricultura, Ganadería, Personal, etc.), con detalle por cuenta contable al hacer click en cada concepto. Si elegís más de un período, el gráfico muestra una barra por período para comparar.
+- **Por Concepto**: ranking de ingresos (Cereal, Hacienda, Leche, Extraordinaria) y egresos (Agricultura, Ganadería, Personal, etc.). Click en un concepto para ver el detalle por cuenta contable, y click en una cuenta para ver el detalle por proveedor/cliente. Si elegís más de un período, el gráfico muestra una barra por período para comparar.
 - **Índices**: margen mensual/acumulado, ratio ingresos/egresos, estructura de egresos, cobertura de egresos con el ingreso de Leche, y variación interanual por mes.
 - **Toggle $ / U$D** en el encabezado (nota: julio 2026 en adelante no trae tipo de cambio en el archivo fuente, así que en U$D esos meses van a verse en cero hasta que se incorpore ese dato).
 
