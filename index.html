@@ -460,21 +460,29 @@ function renderPorConcepto(data, tipo, chartId, tableId){
   const rows = data.filter(d=>d.t===tipo);
   const byConcept = {};
   rows.forEach(d=>{
-    if(!byConcept[d.c]) byConcept[d.c] = {total:0, accounts:{}};
-    byConcept[d.c].total += val(d);
+    const pk = d.a+'-'+d.m;
+    const v = val(d);
+    if(!byConcept[d.c]) byConcept[d.c] = {total:0, byPeriod:{}, accounts:{}};
+    byConcept[d.c].total += v;
+    byConcept[d.c].byPeriod[pk] = (byConcept[d.c].byPeriod[pk]||0) + v;
     const ak = d.ct+'|'+d.d;
-    if(!byConcept[d.c].accounts[ak]) byConcept[d.c].accounts[ak] = {total:0, proveedores:{}};
-    byConcept[d.c].accounts[ak].total += val(d);
+    if(!byConcept[d.c].accounts[ak]) byConcept[d.c].accounts[ak] = {total:0, byPeriod:{}, proveedores:{}};
+    const accEntry = byConcept[d.c].accounts[ak];
+    accEntry.total += v;
+    accEntry.byPeriod[pk] = (accEntry.byPeriod[pk]||0) + v;
     const prName = d.pr || 'Sin proveedor/cliente';
-    byConcept[d.c].accounts[ak].proveedores[prName] = (byConcept[d.c].accounts[ak].proveedores[prName]||0) + val(d);
+    if(!accEntry.proveedores[prName]) accEntry.proveedores[prName] = {total:0, byPeriod:{}};
+    accEntry.proveedores[prName].total += v;
+    accEntry.proveedores[prName].byPeriod[pk] = (accEntry.proveedores[prName].byPeriod[pk]||0) + v;
   });
   const concepts = Object.keys(byConcept).sort((a,b)=>byConcept[b].total-byConcept[a].total);
   const total = concepts.reduce((s,c)=>s+byConcept[c].total,0);
   const color = tipo==='I' ? COLORS.ing : COLORS.egr;
   const selPeriods = periods.filter(p=>selected.has(p));
+  const multi = selPeriods.length > 1;
 
   destroyChart(chartId);
-  if(selPeriods.length <= 1){
+  if(!multi){
     charts[chartId] = new Chart(document.getElementById('chart-'+chartId), {
       type:'bar',
       data:{labels:concepts, datasets:[{data:concepts.map(c=>byConcept[c].total), backgroundColor:color, borderRadius:3}]},
@@ -506,23 +514,47 @@ function renderPorConcepto(data, tipo, chartId, tableId){
     });
   }
 
+  const periodLabels = selPeriods.map(pk=>{ const [a,m]=pk.split('-'); return MESES[Number(m)]+'-'+a.slice(2); });
   const tbl = document.getElementById(tableId);
-  tbl.querySelector('thead').innerHTML = '<tr><th>Concepto / Cuenta / Proveedor</th><th>Monto</th><th>%</th></tr>';
+  const headCols = multi
+    ? ['Concepto / Cuenta / Proveedor', ...periodLabels, 'Total', '%']
+    : ['Concepto / Cuenta / Proveedor', 'Monto', '%'];
+  tbl.querySelector('thead').innerHTML = '<tr>' + headCols.map(h=>`<th>${h}</th>`).join('') + '</tr>';
   const expSet = tipo==='I' ? expanded.ing : expanded.egr;
   const expAccSet = tipo==='I' ? expanded.ingAcc : expanded.egrAcc;
+
+  function periodCells(byPeriod){
+    return selPeriods.map(pk => `<td>${fmtPlain(byPeriod[pk]||0)}</td>`).join('');
+  }
+
   let html = '';
   concepts.forEach(c=>{
-    const share = total>0 ? byConcept[c].total/total : 0;
-    html += `<tr class="concept-row" data-concept="${c}"><td class="label">${c}</td><td>${fmtPlain(byConcept[c].total)}</td>
-      <td class="bar-cell">${pct(share)}<div class="bar-track"><div class="bar-fill" style="width:${(share*100).toFixed(1)}%; background:${color}"></div></div></td></tr>`;
-    const accs = Object.entries(byConcept[c].accounts).sort((a,b)=>b[1].total-a[1].total);
+    const entry = byConcept[c];
+    const share = total>0 ? entry.total/total : 0;
+    if(multi){
+      html += `<tr class="concept-row" data-concept="${c}"><td class="label">${c}</td>${periodCells(entry.byPeriod)}<td>${fmtPlain(entry.total)}</td>
+        <td class="bar-cell">${pct(share)}<div class="bar-track"><div class="bar-fill" style="width:${(share*100).toFixed(1)}%; background:${color}"></div></div></td></tr>`;
+    } else {
+      html += `<tr class="concept-row" data-concept="${c}"><td class="label">${c}</td><td>${fmtPlain(entry.total)}</td>
+        <td class="bar-cell">${pct(share)}<div class="bar-track"><div class="bar-fill" style="width:${(share*100).toFixed(1)}%; background:${color}"></div></div></td></tr>`;
+    }
+    const accs = Object.entries(entry.accounts).sort((a,b)=>b[1].total-a[1].total);
     accs.forEach(([ak,accData])=>{
       const [cuenta, desc] = ak.split('|');
       const accKey = c+'||'+ak;
-      html += `<tr class="account-row ${expSet.has(c)?'show':''}" data-parent="${c}" data-acckey="${accKey}"><td class="label">${cuenta} — ${desc}</td><td>${fmtPlain(accData.total)}</td><td></td></tr>`;
-      const provs = Object.entries(accData.proveedores).sort((a,b)=>b[1]-a[1]);
-      provs.forEach(([prov, amt])=>{
-        html += `<tr class="proveedor-row ${(expSet.has(c) && expAccSet.has(accKey))?'show':''}" data-accparent="${accKey}"><td class="label">${prov}</td><td>${fmtPlain(amt)}</td><td></td></tr>`;
+      if(multi){
+        html += `<tr class="account-row ${expSet.has(c)?'show':''}" data-parent="${c}" data-acckey="${accKey}"><td class="label">${cuenta} — ${desc}</td>${periodCells(accData.byPeriod)}<td>${fmtPlain(accData.total)}</td><td></td></tr>`;
+      } else {
+        html += `<tr class="account-row ${expSet.has(c)?'show':''}" data-parent="${c}" data-acckey="${accKey}"><td class="label">${cuenta} — ${desc}</td><td>${fmtPlain(accData.total)}</td><td></td></tr>`;
+      }
+      const provs = Object.entries(accData.proveedores).sort((a,b)=>b[1].total-a[1].total);
+      provs.forEach(([prov, prData])=>{
+        const show = (expSet.has(c) && expAccSet.has(accKey)) ? 'show' : '';
+        if(multi){
+          html += `<tr class="proveedor-row ${show}" data-accparent="${accKey}"><td class="label">${prov}</td>${periodCells(prData.byPeriod)}<td>${fmtPlain(prData.total)}</td><td></td></tr>`;
+        } else {
+          html += `<tr class="proveedor-row ${show}" data-accparent="${accKey}"><td class="label">${prov}</td><td>${fmtPlain(prData.total)}</td><td></td></tr>`;
+        }
       });
     });
   });
