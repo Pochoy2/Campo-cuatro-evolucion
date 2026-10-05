@@ -419,7 +419,7 @@ const DATA = [{"a":2024,"m":3,"t":"E","c":"AGRICULTURA","ct":50200100,"d":"GTO A
 const DEFAULT_PRECIOS = {"2024-1": {"leche": 266.0, "carne": 1424.2, "soja": 272523.0, "tc": 837.5}, "2024-2": {"leche": 319.0, "carne": 1689.0, "soja": 252235.0, "tc": 853.8}, "2024-3": {"leche": 367.0, "carne": 1704.0, "soja": 253241.0, "tc": 869.4}, "2024-4": {"leche": 383.0, "carne": 1763.0, "soja": 251611.0, "tc": 887.9}, "2024-5": {"leche": 423.0, "carne": 1777.0, "soja": 276446.0, "tc": 905.7}, "2024-6": {"leche": 429.0, "carne": 1827.0, "soja": 287817.0, "tc": 922.5}, "2024-7": {"leche": 447.33, "carne": 1938.0, "soja": 288053.0, "tc": 941.8}, "2024-8": {"leche": 454.51, "carne": 1953.0, "soja": 289869.0, "tc": 961.3}, "2024-9": {"leche": 455.12, "carne": 1872.0, "soja": 299996.0, "tc": 963.5}, "2024-10": {"leche": 456.19, "carne": 1910.0, "soja": 311516.0, "tc": 981.0}, "2024-11": {"leche": 461.54, "carne": 2051.0, "soja": 301388.0, "tc": 1000.6}, "2024-12": {"leche": 462.04, "carne": 2281.0, "soja": 291475.0, "tc": 1020.6}, "2025-1": {"leche": 461.75, "carne": 2500.0, "soja": 282500.0, "tc": 1053.0}, "2025-2": {"leche": 461.73, "carne": 2820.0, "soja": 305500.0, "tc": 1063.5}, "2025-3": {"leche": 465.73, "carne": 2950.0, "soja": 330422.0, "tc": 1068.7}, "2025-4": {"leche": 478.36, "carne": 3030.0, "soja": 318246.0, "tc": 1143.0}, "2025-5": {"leche": 491.75, "carne": 3050.0, "soja": 312421.0, "tc": 1139.3}, "2025-6": {"leche": 494.24, "carne": 3100.0, "soja": 320397.0, "tc": 1171.8}, "2025-7": {"leche": 498.04, "carne": 3120.0, "soja": 360542.0, "tc": 1260.0}, "2025-8": {"leche": 498.93, "carne": 3200.0, "soja": 393143.0, "tc": 1367.0}, "2025-9": {"leche": 497.61, "carne": 3300.0, "soja": 436550.0, "tc": 1399.6}, "2025-10": {"leche": 495.86, "carne": 3425.0, "soja": 480667.0, "tc": 1405.5}, "2025-11": {"leche": 497.04, "carne": 4000.0, "soja": 489455.0, "tc": 1425.4}, "2025-12": {"leche": 495.52, "carne": 4350.0, "soja": 496214.0, "tc": 1443.0}, "2026-1": {"leche": 496.85, "carne": 4400.0, "soja": 496214.0, "tc": 1461.5}, "2026-2": {"leche": 498.79, "carne": 4800.0, "soja": 458051.0, "tc": 1405.0}, "2026-3": {"leche": 508.46, "carne": 4800.0, "soja": 462116.0, "tc": 1397.0}, "2026-4": {"leche": 512.69, "carne": 4700.0, "soja": 428714.0, "tc": 1380.8}, "2026-5": {"leche": 524.7, "carne": 4600.0, "soja": 457857.0, "tc": 1398.2}, "2026-6": {"leche": 539.28, "carne": 4600.0, "soja": 467450.0, "tc": 1446.25}, "2026-7": {"leche": 554.71, "carne": 4670.0, "soja": 507040.0, "tc": 1483.3}};
 const MESES = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const MESES_LARGO = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-const COLORS = {ing:'#33553B', ingLight:'#6E9B6C', egr:'#8A3B2B', egrLight:'#C97B62', gold:'#B98A1E', resultado:'#F2B705', ink:'#232A21', soft:'#5B6156'};
+const COLORS = {ing:'#33553B', ingLight:'#6E9B6C', egr:'#8A3B2B', egrLight:'#C97B62', gold:'#B98A1E', resultado:'#F57C00', ink:'#232A21', soft:'#5B6156'};
 
 let unit = 'ARS';
 let periods = [...new Set(DATA.map(d=>d.a+'-'+d.m))].sort((a,b)=>{
@@ -872,7 +872,7 @@ function renderIndices(data){
     type:'line',
     data:{labels, datasets:[
       {label:'Margen mensual', data:margenM, borderColor:COLORS.ing, tension:0.25, pointRadius:2},
-      {label:'Margen acumulado', data:margenAcum, borderColor:COLORS.gold, tension:0.25, pointRadius:2, borderDash:[4,3]}
+      {label:'Margen acumulado', data:margenAcum, borderColor:COLORS.resultado, tension:0.25, pointRadius:2, borderDash:[4,3]}
     ]},
     options:{responsive:true, plugins:{legend:{position:'bottom'}, tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+pct(ctx.parsed.y)}}}, scales:{y:{ticks:{callback:v=>pct(v)}}}}
   });
@@ -907,7 +907,7 @@ function renderIndices(data){
   destroyChart('leche');
   charts['leche'] = new Chart(document.getElementById('chart-leche'), {
     type:'line',
-    data:{labels, datasets:[{label:'Ingreso Leche / Egresos Totales', data:lecheArr, borderColor:'#C9A227', backgroundColor:'#C9A227', tension:0.25, pointRadius:2}]},
+    data:{labels, datasets:[{label:'Ingreso Leche / Egresos Totales', data:lecheArr, borderColor:COLORS.resultado, backgroundColor:COLORS.resultado, tension:0.25, pointRadius:2}]},
     options:{responsive:true, plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>pct(ctx.parsed.y)}}}, scales:{y:{ticks:{callback:v=>pct(v)}}}}
   });
 
